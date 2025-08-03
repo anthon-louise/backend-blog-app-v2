@@ -62,7 +62,13 @@ const loginUser = asyncHandler(async (req, res) => {
     res.json({message: 'Login success'})
 })
 
+const logoutUser = asyncHandler(async (req, res) => {
+    res.clearCookie()
+    res.json({message: 'Successfully logout'})
+})
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 }

@@ -5,6 +5,12 @@ const userSchema = Joi.object({
     password: Joi.string().min(3).max(50).required()
 })
 
+const bodySchema = Joi.object({
+    title: Joi.string().min(3).max(20).required(),
+    content: Joi.string().min(3).max(20).required()
+})
+
 module.exports = {
-    userSchema
+    userSchema,
+    bodySchema
 }
