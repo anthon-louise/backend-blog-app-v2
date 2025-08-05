@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser')
 const errorHandler = require('./middlewares/errorHandler')
 const usersRoutes = require('./routes/users.routes')
 const postsRoutes = require('./routes/posts.routes')
+const likesRoutes = require('./routes/likes.routes')
 
 const app = express()
 
@@ -11,6 +12,7 @@ app.use(cookieParser())
 
 app.use('/users', usersRoutes)
 app.use('/posts', postsRoutes)
+app.use('/likes', likesRoutes)
 
 app.use(errorHandler)
 
