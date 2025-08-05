@@ -14,8 +14,13 @@ const idSchema = Joi.object({
     id: Joi.number().integer().positive().required()
 })
 
+const commentSchema = Joi.object({
+    content: Joi.string().min(3).max(20).required()
+})
+
 module.exports = {
     userSchema,
     bodySchema,
-    idSchema
+    idSchema,
+    commentSchema
 }
