@@ -5,5 +5,6 @@ const likesControllers = require('../controllers/likes.controllers')
 
 router.post('/:id', auth, likesControllers.likePost)
 router.delete('/:id', auth, likesControllers.unlikePost)
+router.get('/:id', auth, likesControllers.getLikes)
 
 module.exports = router

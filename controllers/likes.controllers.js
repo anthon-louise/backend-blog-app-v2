@@ -56,7 +56,28 @@ const unlikePost = asyncHandler(async (req, res) => {
     res.json({ message: 'Unliked' })
 })
 
+const getLikes = asyncHandler(async (req, res) => {
+    const value = await validationSchema.idSchema.validateAsync(req.params)
+    const postId = value.id
+
+    const [postRows] = await pool.query(`
+        SELECT * FROM posts WHERE id=?
+        `, [postId])
+    if (postRows.length === 0) {
+        const err = new Error('Post not found')
+        err.status = 404
+        throw err
+    }
+
+    const [rows] = await pool.query(`
+        SELECT COUNT(*) AS like_counts FROM likes WHERE post_id=?
+        `, [postId])
+
+    res.json({ likes: rows[0].like_counts })
+})
+
 module.exports = {
     likePost,
-    unlikePost
+    unlikePost,
+    getLikes
 }
