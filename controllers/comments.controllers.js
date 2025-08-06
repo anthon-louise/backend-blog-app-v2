@@ -41,7 +41,7 @@ const getComments = asyncHandler(async (req, res) => {
 
     const [commentRows] = await pool.query(`
         SELECT * FROM comments WHERE post_id=?
-        `, postId)
+        `, [postId])
     res.json(commentRows)
 })
 
@@ -51,18 +51,68 @@ const getCommentById = asyncHandler(async (req, res) => {
 
     const [rows] = await pool.query(`
         SELECT * FROM comments WHERE id=?
-        `, commentId)
+        `, [commentId])
     if (rows.length === 0) {
         const err = new Error('No comment found')
         err.status = 404
         throw err
     }
 
-    res.json(rows)
+    res.json(rows[0])
+})
+
+const deleteComment = asyncHandler(async (req, res) => {
+    const {userId} = req.user
+
+    const value = await validationSchema.idSchema.validateAsync(req.params)
+    const commentId = value.id
+
+    const [rows] = await pool.query(`
+        SELECT * FROM comments WHERE id=? and user_id=?
+        `, [commentId, userId])
+    if (rows.length === 0) {
+        const err = new Error('No comment found')
+        err.status = 404
+        throw err
+    }
+
+    await pool.query(`
+        DELETE FROM comments WHERE id=?
+        `, [commentId])
+
+    res.json({ message: 'Comment deleted' })
+})
+
+const updateComment = asyncHandler(async (req, res) => {
+    const {userId} = req.user
+
+    const bodyValue = await validationSchema.commentSchema.validateAsync(req.body)
+    const {content} = bodyValue
+    const idValue = await validationSchema.idSchema.validateAsync(req.params)
+    const commentId = idValue.id
+
+    const [rows] = await pool.query(`
+        SELECT * FROM comments WHERE id=? AND user_id=?
+        `, [commentId, userId])
+    if (rows.length === 0) {
+        const err = new Error('No comment found')
+        err.status = 404
+        throw err
+    }
+
+    await pool.query(`
+        UPDATE comments
+        SET content=?
+        WHERE id=?
+        `, [content, commentId])
+
+    res.json({message: 'Updated'})
 })
 
 module.exports = {
     createComment,
     getComments,
-    getCommentById
+    getCommentById,
+    deleteComment,
+    updateComment
 }
